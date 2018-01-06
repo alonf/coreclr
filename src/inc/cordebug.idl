@@ -901,6 +901,27 @@ interface ICorDebugMutableDataTarget : ICorDebugDataTarget
 };
 
 
+/*Alon
+ * Get object hashcode extension.
+ */
+[
+    object,
+    uuid(959807f5-cc2a-40d5-9461-600e603a4fb6),
+    local,
+    pointer_default(unique)
+]
+interface ICorDebugMutableDataTarget2 : ICorDebugMutableDataTarget
+{
+    /*
+     * GetHashCode of an instance
+     */
+    HRESULT GetHashCode([in] CORDB_ADDRESS objAddr,
+                        [out] LONG32 *pHashCode);
+};
+
+/*End Alon*/
+
+
 /*
  * Interface used by the data access services layer to locate metadata 
  * of assemblies in a target. 
@@ -7422,4 +7443,5 @@ library CORDBLib
     interface ICorDebugComObjectValue;
 
     interface ICorDebugModule3;
+    interface ICorDebugMutableDataTarget2;
 };

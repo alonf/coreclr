@@ -318,6 +318,7 @@ class Object
     // retrieve or allocate a sync block for this object
     SyncBlock *GetSyncBlock()
     {
+        DebugBreak();
         WRAPPER_NO_CONTRACT;
         return GetHeader()->GetSyncBlock();
     }

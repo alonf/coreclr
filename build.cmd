@@ -89,7 +89,7 @@ if defined VS150COMNTOOLS (
 :: Thus, these variables are not simply internal to this script!
 
 :: Set the default arguments for build
-set __BuildArch=x64
+set __BuildArch=x86
 set __BuildType=Debug
 set __BuildOS=Windows_NT
 

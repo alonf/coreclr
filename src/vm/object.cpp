@@ -27,6 +27,7 @@ SVAL_IMPL(INT32, ArrayBase, s_arrayBoundsZero);
 // follow the necessary rules to get a new valid hashcode for an object
 DWORD Object::ComputeHashCode()
 {
+    DebugBreak();
     DWORD hashCode;
    
     // note that this algorithm now uses at most HASHCODE_BITS so that it will

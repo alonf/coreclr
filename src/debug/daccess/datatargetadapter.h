@@ -24,7 +24,7 @@ interface ICLRDataTarget;
  * for dbgeng (watson, windbg, etc.) and for any other 3rd parties since 
  * it is a documented API for dump generation.
  */
-class DataTargetAdapter : public ICorDebugMutableDataTarget
+class DataTargetAdapter : public ICorDebugMutableDataTarget2
 {
 public:
     // Create an adapter over the supplied legacy data target interface
@@ -74,6 +74,8 @@ public:
     virtual HRESULT STDMETHODCALLTYPE ContinueStatusChanged(
         DWORD dwThreadId,
         CORDB_CONTINUE_STATUS continueStatus);
+    
+    virtual HRESULT STDMETHODCALLTYPE GetHashCode(CORDB_ADDRESS objAddr, LONG32 *pHashCode);
 
 private:
     LONG m_ref;                         // Reference count.

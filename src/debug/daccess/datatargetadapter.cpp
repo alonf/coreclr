@@ -62,6 +62,13 @@ DataTargetAdapter::QueryInterface(
         // to tell apriori whether an ICLRDataTarget instance supports writing or not.
         *pInterface = static_cast<ICorDebugMutableDataTarget *>(this);
     }
+    else if (interfaceId == IID_ICorDebugMutableDataTarget2)
+    {
+        // Note that we always implement the mutable interface, even though our underlying target
+        // may return E_NOTIMPL for all the functions on this interface.  There is no reliable way
+        // to tell apriori whether an ICLRDataTarget instance supports writing or not.
+        *pInterface = static_cast<ICorDebugMutableDataTarget2 *>(this);
+    }
     else
     {
         // For ICorDebugDataTarget4 and other interfaces directly implemented by the legacy data target.
@@ -256,4 +263,36 @@ DataTargetAdapter::ContinueStatusChanged(
     // Note that we briefly had a ICLRDataTarget4 with this API, but this was never released outside the CLR so
     // all existing implementations should now be gone.
     return E_NOTIMPL;
+}
+
+//return the object hash code, 0 in the case of an error or if no hashcode has assigned to the object
+ HRESULT STDMETHODCALLTYPE
+ DataTargetAdapter::GetHashCode(CORDB_ADDRESS objAddr, LONG32 *pHashCode)
+{
+    *pHashCode = 0;
+    DWORD bits = 0;
+    ULONG32 returned;
+
+    HRESULT hr = ReadVirtual(objAddr - sizeof(DWORD), (PBYTE)&bits, sizeof(DWORD), &returned);
+    
+    if ((hr != S_OK) || (returned != sizeof(DWORD)))
+    {
+        return E_UNEXPECTED;
+    }
+
+    if (bits & BIT_SBLK_IS_HASH_OR_SYNCBLKINDEX)
+    {
+        if (bits & BIT_SBLK_IS_HASHCODE)
+        {
+            // Common case: the object already has a hash code
+            *pHashCode = bits & MASK_HASHCODE;
+            return S_OK;
+        }
+        //else
+        DWORD syncBlockIndex = bits & MASK_SYNCBLOCKINDEX;
+        PTR_SyncTableEntry ste = PTR_SyncTableEntry(dac_cast<TADDR>(g_pSyncTable) + (sizeof(SyncTableEntry) * syncBlockIndex));
+               
+        *pHashCode = ste->m_SyncBlock->GetHashCode();
+    }
+    return  S_OK;
 }
